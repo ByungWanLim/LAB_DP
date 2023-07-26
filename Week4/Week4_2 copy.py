@@ -50,9 +50,9 @@ custom_testset = CustomDataset(test_folder, transform)
 
 # 데이터셋 분할 (예시로 80% train, 10% test, 10% validation)
 train_size = int(0.8 * len(custom_dataset))
-val_size = (len(custom_dataset) - train_size)
-train_dataset, val_dataset = random_split(custom_dataset, [train_size, val_size])
-test_dataset = custom_testset
+val_size = (len(custom_dataset) - train_size) // 2
+train_dataset, test_dataset, val_dataset = random_split(custom_dataset, [train_size, val_size, val_size])
+#test_dataset = custom_testset
 
 # DataLoader 생성
 batch_size = 64
@@ -64,7 +64,7 @@ os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 torch.backends.cuda.matmul.allow_tf32 = True
 
 # ResNet-18 모델 불러오기
-model = models.resnet18(pretrained=False)  # 사전 훈련된 가중치를 사용하지 않음 (랜덤 초기화)
+model = models.resnet18(pretrained=True)  # 사전 훈련된 가중치를 사용하지 않음 (랜덤 초기화)
 num_classes = 1501  # 데이터셋의 클래스 개수에 맞게 수정
 model.fc = nn.Linear(model.fc.in_features, num_classes)
 
@@ -129,7 +129,7 @@ def test(model, test_loader):
 
 # 모델 학습
 learning_rate = 0.001
-epoch = 1
+epoch = 10
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 

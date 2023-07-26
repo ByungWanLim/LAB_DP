@@ -7,10 +7,15 @@ from torch.utils.data import DataLoader, random_split, Dataset
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.models as models
 from tqdm import tqdm
+
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+torch.backends.cuda.matmul.allow_tf32 = True
 
 # 데이터셋 폴더 경로 설정
 data_folder = "C:/Workspace/LAB_DP/Week4/train"
@@ -18,7 +23,7 @@ test_folder = "C:/Workspace/LAB_DP/Week4/test"
 
 # 데이터 전처리를 위한 변환 함수 정의
 transform = transforms.Compose([
-    transforms.Resize((128, 128)),
+    transforms.Resize((64, 64)),
     transforms.ToTensor(),
 ])
 
@@ -33,7 +38,7 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         img_name = self.image_files[idx]
-        img_id = int(img_name[:4])  # 이미지 파일명의 첫 네 자리 숫자를 ID로 사용
+        img_id = int(img_name[:4]) - 1  # 이미지 파일명의 첫 네 자리 숫자를 ID로 사용
         img_path = os.path.join(self.data_folder, img_name)
         image = Image.open(img_path)
 
@@ -42,13 +47,13 @@ class CustomDataset(Dataset):
 
         return image, img_id
 
-
-
 # 사용자 정의 데이터셋 클래스 생성
 custom_dataset = CustomDataset(data_folder, transform)
 custom_testset = CustomDataset(test_folder, transform)
 
 # 데이터셋 분할 (예시로 80% train, 10% test, 10% validation)
+# 시드값 고정
+random.seed(42)
 train_size = int(0.8 * len(custom_dataset))
 val_size = (len(custom_dataset) - train_size)
 train_dataset, val_dataset = random_split(custom_dataset, [train_size, val_size])
@@ -60,11 +65,8 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
-torch.backends.cuda.matmul.allow_tf32 = True
-
 # ResNet-18 모델 불러오기
-model = models.resnet18(pretrained=False)  # 사전 훈련된 가중치를 사용하지 않음 (랜덤 초기화)
+model = models.resnet18(pretrained=True)  # 사전 훈련된 가중치를 사용하지 않음 (랜덤 초기화)
 num_classes = 1501  # 데이터셋의 클래스 개수에 맞게 수정
 model.fc = nn.Linear(model.fc.in_features, num_classes)
 
@@ -107,6 +109,9 @@ def train(model, epoch, optimizer, loss_function, train_loader, val_loader):
 
         val_accuracy = 100 * correct / total
         print(f"Validation Accuracy: {val_accuracy:.2f}%")
+
+        # GPU 메모리 정리
+        torch.cuda.empty_cache()
 
 # Test 함수 구현
 def test(model, test_loader):
