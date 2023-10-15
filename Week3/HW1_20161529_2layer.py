@@ -55,7 +55,7 @@ for epoch in range(epochs):
     b1_2 -= learning_rate * delta_b1
 
     # 500번째 epoch마다 loss를 프린트합니다.
-    if epoch % 500 == 0:
+    if epoch % 2000 == 0:
         print("epoch [{}/{}] loss: {:.4f}".format(epoch, epochs, float(loss)))
 
     # plot을 위해 값 저장
