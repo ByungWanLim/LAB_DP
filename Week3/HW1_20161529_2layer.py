@@ -19,9 +19,9 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 # Initialize weights and biases
-W1_2 = np.random.randn(2, 2)  # First layer weights
-b1_2 = np.zeros((1, 2))  # First layer biases
-W2_2 = np.random.randn(2, 1)  # Second layer weights
+W1_2 = np.random.randn(2, 3)  # First layer weights
+b1_2 = np.zeros((1, 3))  # First layer biases
+W2_2 = np.random.randn(3, 1)  # Second layer weights
 b2_2 = np.zeros((1, 1))  # Second layer biases
 
 errors = []
