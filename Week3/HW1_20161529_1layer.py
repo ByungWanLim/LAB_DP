@@ -55,7 +55,7 @@ for epoch in range(epochs):
 
     # plot을 위해 값 저장
     errors.append(loss)      
-    # 200번째 epoch마다 loss를 프린트합니다.
+    # 2000번째 epoch마다 loss를 프린트합니다.
     if epoch % 2000 == 0:
         print("epoch [{}/{}] loss: {:.4f}".format(epoch, epochs, float(loss)))
 

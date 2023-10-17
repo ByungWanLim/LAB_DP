@@ -2,7 +2,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-epochs = 10000
+epochs = 30000
 learning_rate = 0.05
 
 # Input data setting
@@ -58,8 +58,8 @@ for epoch in range(epochs):
     # plot을 위해 값 저장
     errors.append(loss)
 
-    # 500번째 epoch마다 loss를 프린트합니다.
-    if epoch % 2000 == 0:
+    # 5000번째 epoch마다 loss를 프린트합니다.
+    if epoch % 5000 == 0:
         print("epoch [{}/{}] loss: {:.4f}".format(epoch, epochs, float(loss)))
 
 
